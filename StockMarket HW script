@@ -1,0 +1,128 @@
+Sub StockMarket()
+
+Dim ws As Worksheet
+
+For Each ws In Worksheets
+
+ws.Activate
+
+Cells(1, 9).Value = "Ticker"
+Cells(1, 10).Value = "Yearly Change"
+Cells(1, 11).Value = "Percent Change"
+Cells(1, 12).Value = "Total Stock Volume"
+
+Dim ticker As String
+Dim firstopen As Variant
+Dim lastclose As Double
+Dim mylookupvalue As Variant
+Dim volume As Double
+Dim lastrow As Long
+Dim totalrow As Integer
+Dim Range As Range
+
+totalrow = 2
+lastrow = Cells(Rows.Count, 1).End(xlUp).Row
+volume = 0
+
+
+Set Range = Columns("A:C")
+
+
+
+    For r = 2 To lastrow
+        volume = volume + Cells(r, 7).Value
+        
+        If Cells(r, 1).Value <> Cells(r + 1, 1).Value Then
+            ticker = Cells(r, 1).Value
+            lastclose = Cells(r, 6).Value
+            mylookupvalue = ticker
+            firstopen = Application.WorksheetFunction.VLookup(mylookupvalue, Range, 3, False)
+            Cells(totalrow, 9).Value = ticker
+            Cells(totalrow, 10).Value = lastclose - firstopen
+            If firstopen = 0 Then
+                Cells(totalrow, 11).Value = 0
+            Else
+                Cells(totalrow, 11).Value = (lastclose - firstopen) / firstopen
+            End If
+            Cells(totalrow, 12).Value = volume
+            If Cells(totalrow, 10).Value < 0 Then
+                Cells(totalrow, 10).Interior.ColorIndex = 3
+                Else
+                Cells(totalrow, 10).Interior.ColorIndex = 4
+            End If
+            volume = 0
+            totalrow = totalrow + 1
+        
+        End If
+        
+    Next r
+
+Range("K:K").NumberFormat = "0.00%"
+           
+Cells(1, 16).Value = "Ticker"
+Cells(1, 17).Value = "Value"
+Cells(2, 15).Value = "Greatest Percent Increase"
+Cells(3, 15).Value = "Greatest Percent Decrease"
+Cells(4, 15).Value = "Greatest Total Volume"
+
+Dim lastrow2 As Long
+lastrow2 = Cells(Rows.Count, 9).End(xlUp).Row
+Dim greatestincreaseticker As String
+Dim greatestincreasevalue As Double
+Dim greatestdecreaseticker As String
+Dim greatestdecreasevalue As Double
+Dim greatestvolumeticker As String
+Dim greatestvolumevalue As Double
+
+greatestincreasevalue = Cells(2, 11).Value
+greatestincreaseticker = Cells(2, 9).Value
+
+greatestdecreasevalue = Cells(2, 11).Value
+greatestdecreaseticker = Cells(2, 9).Value
+
+greatestvolumevalue = Cells(2, 12).Value
+greatestvolumeticker = Cells(2, 9).Value
+
+
+    For i = 2 To lastrow2
+    
+        If greatestincreasevalue > Cells(i + 1, 11) Then
+        Cells(2, 16).Value = greatestincreaseticker
+        Cells(2, 17).Value = greatestincreasevalue
+        Else
+        greatestincreaseticker = Cells(i + 1, 9).Value
+        greatestincreasevalue = Cells(i + 1, 11).Value
+        Cells(2, 16).Value = greatestincreaseticker
+        Cells(2, 17).Value = greatestincreasevalue
+        End If
+        
+       
+        If greatestdecreasevalue < Cells(i + 1, 11) Then
+        Cells(3, 16).Value = greatestdecreaseticker
+        Cells(3, 17).Value = greatestdecreasevalue
+        Else
+        greatestdecreaseticker = Cells(i + 1, 9).Value
+        greatestdecreasevalue = Cells(i + 1, 11).Value
+        Cells(3, 16).Value = greatestdecreaseticker
+        Cells(3, 17).Value = greatestdecreasevalue
+        End If
+        
+        If greatestvolumevalue > Cells(i + 1, 12) Then
+        Cells(4, 16).Value = greatestvolumeticker
+        Cells(4, 17).Value = greatestvolumevalue
+        Else
+        greatestvolumeticker = Cells(i + 1, 9).Value
+        greatestvolumevalue = Cells(i + 1, 12).Value
+        Cells(4, 16).Value = greatestincreaseticker
+        Cells(4, 17).Value = greatestincreasevalue
+        End If
+        
+    Next i
+        
+    Cells(2, 17).NumberFormat = "0.00%"
+    Cells(3, 17).NumberFormat = "0.00%"
+   
+Next ws
+
+        
+End Sub
